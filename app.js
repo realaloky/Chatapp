@@ -2,11 +2,10 @@ const { useState, useEffect } = React;
 
 /* =========================
    SUPABASE CONFIG
-   (SAFE: anon public key)
 ========================= */
 const SUPABASE_URL = "https://jbvyidqjbclilifdhmhc.supabase.co";
-const SUPABASE_ANON_KEY ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpidnlpZHFqYmNsaWxpZmRobWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2OTIxMjgsImV4cCI6MjA4NTI2ODEyOH0.LV5IUdRtieo8swVMeL0hbfUIhGUpjnvZoz6-DISSQkc"
-1 visits · 1  ;
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpidnlpZHFqYmNsaWxpZmRobWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2OTIxMjgsImV4cCI6MjA4NTI2ODEyOH0.LV5IUdRtieo8swVMeL0hbfUIhGUpjnvZoz6-DISSQkc";
 
 const supabase = window.supabase.createClient(
   SUPABASE_URL,
@@ -18,24 +17,23 @@ const supabase = window.supabase.createClient(
 ========================= */
 function App() {
   const [loading, setLoading] = useState(true);
-  const [connectionStatus, setConnectionStatus] = useState("checking");
+  const [status, setStatus] = useState("checking");
 
   useEffect(() => {
-    checkSupabaseConnection();
+    verifyConnection();
   }, []);
 
-  async function checkSupabaseConnection() {
+  async function verifyConnection() {
     try {
-      // Lightweight request to verify connectivity
       const { data, error } = await supabase.auth.getSession();
 
       if (error) {
-        setConnectionStatus("error");
+        setStatus("error");
       } else {
-        setConnectionStatus("connected");
+        setStatus("connected");
       }
-    } catch (err) {
-      setConnectionStatus("error");
+    } catch (e) {
+      setStatus("error");
     } finally {
       setLoading(false);
     }
@@ -47,13 +45,13 @@ function App() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <Card status={connectionStatus} />
+      <Card status={status} />
     </div>
   );
 }
 
 /* =========================
-   MAIN CARD
+   CARD
 ========================= */
 function Card({ status }) {
   return (
@@ -80,27 +78,18 @@ function Header() {
 ========================= */
 function Body({ status }) {
   return (
-    <div className="p-4 text-gray-700 space-y-3">
-      <StatusRow
-        label="React"
-        ok={true}
-      />
-      <StatusRow
-        label="Tailwind CSS"
-        ok={true}
-      />
-      <StatusRow
-        label="Supabase"
-        ok={status === "connected"}
-      />
+    <div className="p-4 space-y-3 text-gray-700">
+      <StatusRow label="React" ok={true} />
+      <StatusRow label="Tailwind CSS" ok={true} />
+      <StatusRow label="Supabase" ok={status === "connected"} />
 
-      <div className="pt-4 text-sm text-gray-500">
+      <div className="pt-4 text-sm">
         Status: <b>{status}</b>
       </div>
 
       {status === "connected" && (
         <div className="text-green-600 text-sm font-medium">
-          ✅ Backend ready
+          ✅ Supabase connected successfully
         </div>
       )}
 
@@ -133,7 +122,7 @@ function StatusRow({ label, ok }) {
 function Loading() {
   return (
     <div className="min-h-screen flex items-center justify-center text-gray-500">
-      Connecting to backend...
+      Connecting to Supabase...
     </div>
   );
 }
